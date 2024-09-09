@@ -15,12 +15,13 @@ def best_move(state):
                for  new_state in possible_new_states(state))
 
 @cache
-def possible_new_states(state):    
-    result = []
+def possible_new_states(state):
+    result = set([]) #new states are sorted set to avoid traversing duplicate subtrees
     for idx, pile in enumerate(state):
         if pile > 2:
             for num in range(1, int((pile)/2) + 1):
-                    result.append ( state[0: idx] + (num, ) + (pile-num, ) + state[idx+1: ] )
+                    new_state = sorted ( state[0: idx] + (num, ) + (pile-num, ) + state[idx+1: ] )
+                    result.add ( tuple(new_state) )
     return result
 
 def evaluate(state, is_maximizing):

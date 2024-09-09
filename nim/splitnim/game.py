@@ -5,8 +5,8 @@ from minimax_nim import best_move
 from args import parse_args
 
 def game(starting_player):
-    #state = (random.randint(3, 50), )
-    state = (10, )
+    state = (random.randint(3, 50), )
+    #state = (10, )
     
     reg = re.compile("^\d+\s\d+$")
 
@@ -18,7 +18,10 @@ def game(starting_player):
         computer = False
 
     while any([pile > 2 for pile in state]):
-        print(f"Current State: {state}")
+        print(f"Current State: ", end='')
+        for i, p in enumerate(state):
+            print(f"[{i+1}]{p}", end=", ")
+        print()
         if computer:
             score, new_state = best_move(state)
             #move = state - new_state
