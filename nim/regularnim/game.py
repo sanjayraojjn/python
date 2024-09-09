@@ -2,8 +2,9 @@ import random
 import re
 
 from minimax_nim import best_move
+from args import parse_args
 
-def game():
+def game(last_counter_wins, starting_player):
     #num_piles = 2
     #state = (5,2)
     num_piles = random.randint(1,3)
@@ -11,12 +12,17 @@ def game():
     
     reg = re.compile("^\d+\s\d+$")
 
-    computer = random.choice([0,1])
+    if starting_player == "random":
+        computer = random.choice([0,1])
+    elif starting_player == "computer":
+        computer = True
+    else:
+        computer = False
 
     while any(state):
         print(f"Current State: {state}")
         if computer:
-            score, new_state = best_move(state)
+            score, new_state = best_move(state, last_counter_wins)
             #move = state - new_state
             computer = 0
             print(f"Computer played. {state} -> {new_state}")
@@ -46,12 +52,15 @@ def game():
             state = state[0:pile-1] + (state[pile-1] - counter, ) + state[pile:]
             #state[pile-1] = state[pile-1] - counter
     
-    if computer:
+    if (computer and not last_counter_wins) or \
+            (not computer and last_counter_wins):
         print(f"Computer wins, you lose. \U0001F641")
     else:
         print(f"You win \N{party popper}")
 
 if __name__ == "__main__":
-    game()
+    args = parse_args()
+    print(f"last_counter_wins: {args.last_counter_wins}")
+    game(args.last_counter_wins, args.starting_player)
 
 
