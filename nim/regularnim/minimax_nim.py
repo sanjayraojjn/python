@@ -1,7 +1,7 @@
 import time
+from functools import cache
 
-gPossibleStates = {}
-
+@cache
 def minimax(state, is_maximizing, last_counter_wins=False):
     if (score := evaluate(state, is_maximizing, last_counter_wins)) is not None:
         return score
@@ -13,21 +13,14 @@ def best_move(state, last_counter_wins=False):
     return max( (minimax(new_state, False, last_counter_wins), new_state) 
                for  new_state in possible_new_states(state))
 
+@cache
 def possible_new_states(state):
-    if state in gPossibleStates:
-        return gPossibleStates[state]
-    
     result = []
     for idx, pile in enumerate(state):
         if pile > 0:
             for num in range(pile):
-                    #print(state[0: idx] + [num, ] + state[idx+1: ])
-                    #time.sleep(5)
                     result.append ( state[0: idx] + (num, ) + state[idx+1: ] )
-    gPossibleStates[state] = result
     return result
-    #return [for pile in piles]
-    #return [state - take for take in (1,2,3) if state >= take]
 
 def evaluate(state, is_maximizing, last_counter_wins=False):
     if last_counter_wins:
