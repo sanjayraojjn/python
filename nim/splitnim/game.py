@@ -6,7 +6,7 @@ from args import parse_args
 
 def game(starting_player):
     state = (random.randint(3, 50), )
-    #state = (10, )
+    state = (10, )
     
     reg = re.compile("^\d+\s\d+$")
 
@@ -54,9 +54,10 @@ def game(starting_player):
             state = state[0:pile-1] + (counter, ) + (state[pile-1] - counter, ) + state[pile:]
     
     if computer:
-        print(f"Computer wins, you lose. \U0001F641")
+        print(f"You win. Computer cannot split anymore. \N{party popper}")
     else:
-        print(f"You win \N{party popper}")
+        print(f"Computer wins, you lose. \U0001F641")
+        
 
 if __name__ == "__main__":
     args = parse_args()

@@ -2,13 +2,22 @@ import time
 from functools import cache
 
 @cache
-def minimax(state, is_maximizing):
+def minimax(state, is_maximizing, alpha=-1, beta=1):
     #print(f"state: {state}")
     if (score := evaluate(state, is_maximizing)) is not None:
         return score
     
-    #print(f"state: {state}")
-    return (max if is_maximizing else min) ( minimax(new_state, not is_maximizing) for new_state in possible_new_states(state) )
+    scores = []
+    for new_state in possible_new_states(state):
+        scores.append( score := minimax(new_state, not is_maximizing) )
+        if is_maximizing:
+            alpha = max(score, alpha)
+        else:
+            beta = min(score, beta)
+        if beta < alpha:
+            break
+    
+    return (max if is_maximizing else min) ( scores )
     
 def best_move(state):
     return max( (minimax(new_state, False), new_state) 
@@ -27,4 +36,4 @@ def possible_new_states(state):
 def evaluate(state, is_maximizing):
     splittable_piles = [pile for pile in state if pile > 2]
     if not splittable_piles:
-        return 1 if is_maximizing else -1
+        return -1 if is_maximizing else 1
