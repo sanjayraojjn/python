@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from atlas_core.nim.game.player import Player
+from alvinatlas.nim.game.player import Player
 
 @dataclass(frozen=True)
 class Nim:

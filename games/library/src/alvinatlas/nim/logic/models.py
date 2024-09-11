@@ -3,9 +3,9 @@ from functools import cached_property, cache
 from typing import TYPE_CHECKING
 
 from validators import validate_counter, validate_pile_index, validate_move, validate_board
-from atlas_core.core.models import GameState as CoreGameState
+from alvinatlas.core.models import GameState as CoreGameState
 #if TYPE_CHECKING:
-#    from atlas_core.nim.game.player import Player
+#    from alvinatlas.nim.game.player import Player
 
 @dataclass(frozen=True)
 class Counter(int):

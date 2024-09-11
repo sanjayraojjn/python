@@ -1,10 +1,10 @@
 import random
 from dataclasses import dataclass
 
-from atlas_core.core.minimax import Minimax
+from alvinatlas.core.minimax import Minimax
 
-from atlas_core.nim.logic.models import GameState, Move, Counter, PileIndex, NimBoard
-from atlas_core.nim.logic.exceptions import InvalidMove
+from alvinatlas.nim.logic.models import GameState, Move, Counter, PileIndex, NimBoard
+from alvinatlas.nim.logic.exceptions import InvalidMove
 
 @dataclass(frozen=True)
 class Player:

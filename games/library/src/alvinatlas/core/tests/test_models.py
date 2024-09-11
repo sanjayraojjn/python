@@ -2,8 +2,8 @@ import unittest
 from functools import cache
 from dataclasses import dataclass
 
-from atlas_core.core.models import GameState
-from atlas_core.core.exceptions import InvalidCounter
+from alvinatlas.core.models import GameState
+from alvinatlas.core.exceptions import InvalidCounter
 
 @dataclass(frozen=True)
 class SimpleNimGameState(GameState):
