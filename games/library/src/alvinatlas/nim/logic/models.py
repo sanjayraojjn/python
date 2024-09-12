@@ -39,14 +39,17 @@ class NimBoard:
         return sum(self.piles)
     
     def __repr__(self):
-        return f"--{self.piles}--"
+        out = f""
+        for idx, pile in enumerate(self.piles):
+            out = out + f'{idx} -> [' + (f"\N{circled times} " * self.counter) + f"] {pile}" + "\n"
+        return out
 
 @dataclass(frozen=True)
 class GameState(CoreGameState):
     board: NimBoard           #game board
     #next_player: Player      #whose turn is next
 
-    @cache
+    @cached_property
     def possible_moves(self)->list["Move"]:
         result = []
         for idx, pile in enumerate(self.board.piles):
@@ -57,7 +60,7 @@ class GameState(CoreGameState):
                 result.append[next_move]
         return result
                 
-    @cache
+    @cached_property
     def possible_next_states(self)->list["GameState"]:
         result = []
         for idx, pile in enumerate(self.board.piles):
@@ -70,7 +73,7 @@ class GameState(CoreGameState):
     def game_over(self)->bool:
         return not any(self.board.piles)
     
-    @cache
+    @cached_property
     def score(self)->int|None:
         if not any(self.board.piles):
             return 1

@@ -9,25 +9,27 @@ class Minimax:
         self.max_score = max_score
 
     @cache
-    def get_best_move(self, game_state: GameState)->Move|None:
+    def get_best_gamestate(self, game_state: GameState)->GameState|None:
         """
         """
         if game_state.game_over:
             return None
-        return self.minimax(game_state, True)
+        return max( (self.minimax(new_state, False), new_state ) \
+                   for new_state in game_state.possible_next_states )
 
     @cache
-    def minimax(self, game_state: GameState, is_maximizing: bool)->int:
+    def minimax(self, game_state: GameState, is_maximizing: bool)->GameState:
         """
+        returns the next most probable winning gamestate
         """
         if game_state.game_over:
             return self.max_score if is_maximizing else self.min_score
 
-        if (score := game_state.score() ) is not None:
-            return score
-        
+        #if game_state.score is not None:
+        #    return game_state.score
+
         return (max if is_maximizing else min) \
-            ( self.minimax(next_state, not is_maximizing) for next_state in game_state.possible_next_states() )
+                ( self.minimax(next_state, not is_maximizing) for next_state in game_state.possible_next_states )
 
         
 
