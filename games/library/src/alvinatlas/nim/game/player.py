@@ -62,7 +62,7 @@ class MinimaxComputerPlayer(Player):
     """coputer player implementing minimax algorithm"""
 
     def __init__(self):
-        self.minimax = MiniMax(min_score=-1, max_score=1)
+        self.minimax = Minimax(min_score=-1, max_score=1)
         
 
     def get_move(self, game_state: GameState)->Move|None:

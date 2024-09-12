@@ -1,6 +1,6 @@
 from functools import cache
 
-from models import GameState, Move
+from alvinatlas.core.models import GameState, Move
 
 class Minimax:
 

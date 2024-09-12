@@ -2,7 +2,7 @@ import unittest
 from functools import cache
 from dataclasses import dataclass
 
-from alvinatlas.core.models import GameState
+from alvinatlas.core.models import GameState, Move
 from alvinatlas.core.exceptions import InvalidCounter
 
 @dataclass(frozen=True)

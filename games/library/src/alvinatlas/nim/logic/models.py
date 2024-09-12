@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from functools import cached_property, cache
 from typing import TYPE_CHECKING
 
-from validators import validate_counter, validate_pile_index, validate_move, validate_board
+from alvinatlas.nim.logic.validators import validate_counter, validate_pile_index, validate_move, validate_board
 from alvinatlas.core.models import GameState as CoreGameState
 #if TYPE_CHECKING:
 #    from alvinatlas.nim.game.player import Player
