@@ -1,7 +1,7 @@
 class InvalidCounter(Exception):
     """Invalid counter"""
 
-class InvalidPile(Exception):
+class InvalidPileIndex(Exception):
     """Invalid Pile"""
 
 class InvalidMove(Exception):

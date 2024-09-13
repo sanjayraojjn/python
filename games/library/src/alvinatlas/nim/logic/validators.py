@@ -1,23 +1,23 @@
 from typing import TYPE_CHECKING
 
-from exceptions import InvalidCounter, InvalidPile, InvalidMove, InvalidBoardState
+from alvinatlas.nim.logic.exceptions import InvalidCounter, InvalidPileIndex, InvalidMove, InvalidBoardState
 
 if TYPE_CHECKING:
-    from models import Move, Counter, PileIndex, NimBoard
+    from alvinatlas.nim.logic.models import Counter, Move, Counter, PileIndex, NimBoard
 
-def validate_counter(counter: Counter)->None:
+def validate_counter(counter: "Counter")->None:
     if counter < 0:
         raise InvalidCounter("Counter must be at least zero.")
     if not isinstance(counter, int):
         raise InvalidCounter("Counter must be an integer.")
 
-def validate_pile_index(pile_index: PileIndex)->None:
+def validate_pile_index(pile_index: "PileIndex")->None:
     if pile_index <= 0:
-        raise InvalidPile("Pile number must be greater than zero")
+        raise InvalidPileIndex("Pile number must be greater than zero")
     if not isinstance(pile_index, int):
-        raise InvalidPile("Pile must be an integer.")
+        raise InvalidPileIndex("Pile must be an integer.")
 
-def validate_move(move: Move)->None:
+def validate_move(move: "Move")->None:
     num_counters_in_pile: int = move.before_state.board.piles[ move.pile.array_index ]
     if num_counters_in_pile < move.counter:
         raise InvalidMove(f"{move.pile} has only {num_counters_in_pile}. Not possible to draw {move.counter} counters")
@@ -26,7 +26,7 @@ def validate_move(move: Move)->None:
     if num_counters_before_move != num_counters_after_move + move.counter:
         raise InvalidMove(f"before state {move.pile}#{num_counters_before_move} and after state {move.pile}#{num_counters_after_move} are not consistent after moving {move.counter} counters")
     
-def validate_board(board: NimBoard)->None:
+def validate_board(board: "NimBoard")->None:
     for idx, pile in enumerate(board.piles):
         if pile < 0:
             if(len(board.piles) > 1):

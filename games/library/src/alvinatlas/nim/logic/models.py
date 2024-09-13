@@ -7,17 +7,16 @@ from alvinatlas.core.models import GameState as CoreGameState
 #if TYPE_CHECKING:
 #    from alvinatlas.nim.game.player import Player
 
-@dataclass(frozen=True)
+#@dataclass(frozen=True)
 class Counter(int):
-    def __post_init__(self)->None:
-        #validate counter value
-        validate_counter(self)
+    def __init__(self, *args, **kwargs):
+        validate_counter(args[0])
+        super(Counter, self).__init__()
 
-@dataclass(frozen=True)
 class PileIndex(int):
-    def __post_init__(self)->None:
-        #validate pile number
-        validate_pile_index(self)
+    def __init__(self, *args, **kwargs):
+        validate_pile_index(args[0])
+        super(PileIndex, self).__init__()
 
     @cached_property
     def array_index(self)->int:
