@@ -5,12 +5,12 @@ from alvinatlas.nim.logic.models import Counter
 from alvinatlas.nim.logic.exceptions import InvalidCounter
 import unittest
 from alvinatlas.nim.logic.models import GameState as NimGameState
-from alvinatlas.nim.logic.models import Counter, PileIndex
+from alvinatlas.nim.logic.models import Counter, PileIndex, NimBoard
 from alvinatlas.nim.logic.exceptions import InvalidCounter, InvalidPileIndex
 
 class TestCounter(unittest.TestCase):
 
-    def test_counter_values(self):
+    def test_counter_values(self)->None:
         """
         tests different values of the counter
         """
@@ -20,13 +20,15 @@ class TestCounter(unittest.TestCase):
         self.assertEqual(1, (counter := Counter(1) ) )
         self.assertEqual(0, (counter := Counter(0) ) )
         #Counter(-1)
+
+    def test_counter_values_negative_cases(self)->None:
         #negative cases
         with self.assertRaises(InvalidCounter, msg="counter must not allow less than zero"):
             counter = Counter(-1)
         with self.assertRaises(InvalidCounter, msg="counter must not allow less than zero"):
             counter = Counter(-100)
         
-    def test_counter_value_types(self):
+    def test_counter_unsupported_value_types(self)->None:
         """
         test counter value types
         """
@@ -37,14 +39,18 @@ class TestCounter(unittest.TestCase):
 
 class TestPileIndex(unittest.TestCase):
 
-    def test_pile_index_values(self):
+    def test_pile_index_values(self)->None:
         """
         tests different values of the pile index
         """
         # larger values
         self.assertEqual(10, (pile_index := PileIndex(10)))
-        # larger values
+        self.assertEqual(9, pile_index.array_index)
+        # smaller values
         self.assertEqual(1, (pile_index := PileIndex(1)))
+        self.assertEqual(0, pile_index.array_index)
+
+    def test_pile_index_values_negative_cases(self)->None:
         # min values
         with self.assertRaises(InvalidPileIndex, msg="pile index must be greater than zero"):
             pile_index = PileIndex(0)
@@ -54,7 +60,7 @@ class TestPileIndex(unittest.TestCase):
         with self.assertRaises(InvalidPileIndex, msg="pile index must not allow less than zero"):
             pile_index = PileIndex(-100)
 
-    def test_pile_index_value_types(self):
+    def test_pile_index_value_types(self)->None:
         """
         test pile index value types
         """
@@ -62,6 +68,49 @@ class TestPileIndex(unittest.TestCase):
             pile_index = PileIndex("abc")
         with self.assertRaises(InvalidPileIndex, msg="pile index must be integer type only, not float/double"):
             pile_index = PileIndex(11.5)
+
+class TestNimBoard(unittest.TestCase):
+    """
+    tests Nim board
+    """
+
+    def test_nimboard_creation(self)->None:
+        """
+        tests basic functionality of NimBoard
+        """
+        #postivie cases
+        board = NimBoard( (Counter(5), Counter(10), Counter(3) ) )
+        self.assertEqual(board.num_piles, 3, f"board length should be 3")
+        self.assertEqual(board.total_counters, 18, "total counters should be 18")
+
+    def test_nimboard_creation_negative_cases(self)->None:
+
+        with self.assertRaises(InvalidCounter, msg="None of the counters in Nimboard can be less than zero"):
+            board = NimBoard( (Counter(5), Counter(-1)) )
+
+        with self.assertRaises(InvalidCounter, msg="NimBoard can have Counter type only"):
+            board = NimBoard( (1,2,3) )
+
+        with self.assertRaises(ValueError, msg="only tuple of Counter type allowed"):
+            board = NimBoard( [Counter(5), Counter(10), Counter(3) ] )
+
+class TestGameState(unittest.TestCase):
+    """
+    tests Nim Game state
+    """
+
+    def test_gamestate_creation(self)->None:
+        """
+        tests creation of new game state
+        """
+        board = ( (1,2,3,4) )
+        with self.assertRaises(ValueError, msg="Nim GameState can be created using NimBoard only"):
+            game_state = NimGameState(board)
+
+        board = NimBoard( ( Counter(5), Counter(10) ) )
+        game_state = NimGameState(board)
+
+
 
 if __name__ == "__main__":
     unittest.main()

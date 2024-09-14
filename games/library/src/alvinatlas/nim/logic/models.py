@@ -2,7 +2,8 @@ from dataclasses import dataclass
 from functools import cached_property, cache
 from typing import TYPE_CHECKING
 
-from alvinatlas.nim.logic.validators import validate_counter, validate_pile_index, validate_move, validate_board
+from alvinatlas.nim.logic.validators import validate_counter, \
+    validate_pile_index, validate_move, validate_board, validate_gamestate
 from alvinatlas.core.models import GameState as CoreGameState
 #if TYPE_CHECKING:
 #    from alvinatlas.nim.game.player import Player
@@ -34,7 +35,7 @@ class NimBoard:
         return len(self.piles)
     
     @cached_property
-    def total_counter(self):
+    def total_counters(self):
         return sum(self.piles)
     
     def __repr__(self):
@@ -47,6 +48,9 @@ class NimBoard:
 class GameState(CoreGameState):
     board: NimBoard           #game board
     #next_player: Player      #whose turn is next
+
+    def __post_init__(self):
+        validate_gamestate(self)
 
     @cached_property
     def possible_moves(self)->list["Move"]:

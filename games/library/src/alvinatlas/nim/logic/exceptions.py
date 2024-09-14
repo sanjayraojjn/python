@@ -9,3 +9,6 @@ class InvalidMove(Exception):
 
 class InvalidBoardState(Exception):
     """Board is not in consistent state"""
+
+class InvalidGameState(Exception):
+    """Game is not correct"""
