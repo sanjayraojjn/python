@@ -22,9 +22,9 @@ class GameState:
     def game_over(self)->bool:
         """to be implemented by subclass"""
 
-    @cached_property
-    def score(self)->int:
-        """to be implemented by subclass"""
+    #@cached_property
+    #def score(self)->int:
+    #    """to be implemented by subclass"""
 
 @dataclass(frozen=True)
 class Move:
@@ -59,9 +59,9 @@ class SimpleNimGameState(GameState):
     def game_over(self)->bool:
         return self.counter == 0
     
-    @cached_property
-    def score(self)->int:
-        return 1 if (self.counter == 0) else None
+    #@cached_property
+    #def score(self)->int:
+    #    return 1 if (self.counter == 0) else None
     
     def __eq__(self, another_game_state:GameState)->bool:
         return self.counter == another_game_state.counter

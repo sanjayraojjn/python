@@ -67,19 +67,47 @@ class GameState(CoreGameState):
     def possible_next_states(self)->list["GameState"]:
         result = []
         for idx, pile in enumerate(self.board.piles):
-            for counter in range(1, pile):
-                next_state = GameState(NimBoard( self.board.piles[:idx] + (self.board.piles[idx] - counter, ) + self.board.piles[idx+1: ] ))
-                result.append[next_state]
+            for counter in range(1, pile+1):
+                next_state = GameState(NimBoard( self.board.piles[:idx] + \
+                                                ( Counter(self.board.piles[idx] - counter), ) + \
+                                                    self.board.piles[idx+1: ] ))
+                result.append(next_state)
         return result
                 
     @cached_property
     def game_over(self)->bool:
         return not any(self.board.piles)
     
-    @cached_property
-    def score(self)->int|None:
-        if not any(self.board.piles):
-            return 1
+    #@cached_property
+    #def score(self)->int|None:
+    #    if not any(self.board.piles):
+    #        return 1
+    
+    def __eq__(self, another_game_state:"GameState")->bool:
+        return sorted(self.board.piles) == sorted(another_game_state.board.piles)
+    
+    def __ne__(self, another_game_state:"GameState")->bool:
+        return sorted(self.board.piles) != sorted(another_game_state.board.piles)
+    
+    def __gt__(self, another_game_state:"GameState")->bool:
+        return self.board.total_counters > another_game_state.board.total_counters
+    
+    def __lt__(self, another_game_state:"GameState")->bool:
+        return self.board.total_counters < another_game_state.board.total_counters
+    
+    def __ge__(self, another_game_state:"GameState")->bool:
+        return self.board.total_counters >= another_game_state.board.total_counters
+    
+    def __le__(self, another_game_state:"GameState")->bool:
+        return self.board.total_counters <= another_game_state.board.total_counters
+    
+    def __repr__(self):
+        out = f""
+        for pile in self.board.piles:
+            out = out + f'{pile}[' + \
+                (f"\N{circled times} " * pile) + ']\n'
+        return out
+
 
 @dataclass(frozen=True)
 class Move:

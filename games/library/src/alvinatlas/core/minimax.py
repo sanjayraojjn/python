@@ -25,9 +25,6 @@ class Minimax:
         if game_state.game_over:
             return self.max_score if is_maximizing else self.min_score
 
-        #if game_state.score is not None:
-        #    return game_state.score
-
         return (max if is_maximizing else min) \
                 ( self.minimax(next_state, not is_maximizing) for next_state in game_state.possible_next_states )
 

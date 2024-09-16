@@ -103,12 +103,69 @@ class TestGameState(unittest.TestCase):
         """
         tests creation of new game state
         """
+        board = NimBoard( ( Counter(5), Counter(10) ) )
+        game_state = NimGameState(board)
+
+    def test_gamestate_creation_negative_cases(self)->None:
+        """
+        negative test cases - tests creation of new game state
+        """
         board = ( (1,2,3,4) )
         with self.assertRaises(ValueError, msg="Nim GameState can be created using NimBoard only"):
             game_state = NimGameState(board)
 
-        board = NimBoard( ( Counter(5), Counter(10) ) )
+    def test_gamestate_possible_next_states(self)->None:
+        """
+        test possible next states of the given game state
+        """
+        #test-1
+        board = NimBoard( ( Counter(4), Counter(5) ) )
         game_state = NimGameState(board)
+        self.assertEqual(sorted(game_state.possible_next_states) , \
+                         sorted( [ NimGameState( NimBoard( ( Counter(3), Counter(5)) ) ),
+                         NimGameState( NimBoard( ( Counter(2), Counter(5)) ) ),
+                         NimGameState( NimBoard( ( Counter(1), Counter(5)) ) ),
+                         NimGameState( NimBoard( ( Counter(0), Counter(5)) ) ),
+                         NimGameState( NimBoard( ( Counter(4), Counter(4)) ) ),
+                         NimGameState( NimBoard( ( Counter(4), Counter(3)) ) ),
+                         NimGameState( NimBoard( ( Counter(4), Counter(2)) ) ),
+                         NimGameState( NimBoard( ( Counter(4), Counter(1)) ) ),
+                         NimGameState( NimBoard( ( Counter(4), Counter(0)) ) ) ] ) )
+        
+        #test-2
+        board = NimBoard( ( Counter(0), Counter(0), Counter(1) ) )
+        game_state = NimGameState(board)
+        self.assertEqual(sorted(game_state.possible_next_states) , \
+                         sorted( [ NimGameState( NimBoard( ( Counter(0), Counter(0), Counter(0) ) ) ),
+                                    ] ) )
+
+    def test_gamestate_possible_next_states_negative_cases(self)->None:
+        """
+        test possible next states of the given game state
+        """        
+        #test-2
+        board = NimBoard( ( Counter(0), Counter(0), Counter(0) ) )
+        game_state = NimGameState(board)
+        self.assertEqual(sorted(game_state.possible_next_states) , \
+                         sorted( [ ] ) )
+        
+    def test_gamestate_game_over(self)->None:
+        """
+        test game over
+        """
+        #test-1
+        board = NimBoard( ( Counter(4), Counter(5) ) )
+        game_state = NimGameState(board)
+        self.assertFalse( game_state.game_over )
+        #test-1
+        board = NimBoard( ( Counter(0), Counter(0), Counter(1) ) )
+        game_state = NimGameState(board)
+        self.assertFalse( game_state.game_over )
+        #test-1
+        board = NimBoard( ( Counter(0), Counter(0) ) )
+        game_state = NimGameState(board)
+        self.assertTrue( game_state.game_over )
+
 
 
 

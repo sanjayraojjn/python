@@ -32,20 +32,20 @@ class TestModels(unittest.TestCase):
                             "next states must be 2,1,0 for 3")
 
         
-    def test_gamestate_score(self):
-        """
-        tests score of given game state
-        """
-        game_state = SimpleNimGameState(0)
-        self.assertEqual( game_state.score, 1, "Score must be 1 when counter reaches zero {game_state}")
+    # def test_gamestate_score(self):
+    #     """
+    #     tests score of given game state
+    #     """
+    #     game_state = SimpleNimGameState(0)
+    #     self.assertEqual( game_state.score, 1, "Score must be 1 when counter reaches zero {game_state}")
 
-        game_state = SimpleNimGameState(1)
-        self.assertEqual( game_state.score, 0, f"Score must be 0 when counter is not zero {game_state}"), 
+    #     game_state = SimpleNimGameState(1)
+    #     self.assertIsNone( game_state.score, f"Score must be 0 when counter is not zero {game_state}"), 
 
-        game_state = SimpleNimGameState(5)
-        self.assertEqual( game_state.score, 0, f"Score must be 0 when counter is not zero {game_state}"), 
+    #     game_state = SimpleNimGameState(5)
+    #     self.assertEqual( game_state.score, 0, f"Score must be 0 when counter is not zero {game_state}"), 
 
-    def test_gamestate_gameover(self):
+    def test_gamestate_game_over(self):
         """
         tests game over flag
         """
@@ -56,16 +56,6 @@ class TestModels(unittest.TestCase):
         game_state = SimpleNimGameState(1)
         self.assertFalse(game_state.game_over, \
                          "game state must not indicate game over if counter is more than 0 in simple nim")
-        
-    def test_gamestate_score(self):
-        """
-        tests game score
-        """
-        game_state = SimpleNimGameState(0)
-        self.assertEqual(game_state.score, 1, "gamestate score must be 1 when counter is 0")
-
-        game_state = SimpleNimGameState(1)
-        self.assertIsNone(game_state.score, "gamestate score must be None when counter is greater than 0")
 
 if __name__ == "__main__":
     unittest.main()
