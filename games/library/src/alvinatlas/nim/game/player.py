@@ -2,6 +2,7 @@ import random
 from dataclasses import dataclass
 
 from alvinatlas.core.minimax import Minimax
+from alvinatlas.core.exceptions import GameOver
 
 from alvinatlas.nim.logic.models import GameState, Move, Counter, PileIndex, NimBoard
 from alvinatlas.nim.logic.exceptions import InvalidMove
@@ -11,12 +12,10 @@ class Player:
     
     def make_move(self, game_state: GameState)->GameState:
         #check if it is your turn
-        if game_state.next_player is not self:
-            raise InvalidMove(f"This is not {self}'s move")
         if (move := self.get_move(game_state) ):
             return move.after_state
         else:
-            raise InvalidMove("No suitable move")
+            raise GameOver("Game is over")
 
     def get_move(self, game_state: GameState)->Move|None:
         """
@@ -30,7 +29,7 @@ class ComputerRandomPlayer(Player):
     def get_move(self, game_state: GameState)->Move|None:
         """
         """
-        return random.choice( game_state.possible_moves() )
+        return random.choice( game_state.possible_moves )
     
 @dataclass(frozen=True)
 class ConsolePlayer(Player):
@@ -52,21 +51,37 @@ class ConsolePlayer(Player):
         except ValueError:
             raise InvalidMove("wrong inputs")
         
+        after_state = GameState(NimBoard( game_state.board.piles[:pile.array_index] + \
+                            (Counter(game_state.board.piles[pile.array_index] - counter), ) + \
+                            game_state.board.piles[pile.array_index+1: ] ))
+        
         return Move(counter, pile, \
                     game_state, \
-                    GameState(NimBoard( self.board.piles[:pile] + (self.board.piles[pile] - counter, ) + self.board.piles[pile+1: ] ))    )
+                    after_state)
         
 
 @dataclass(frozen=True)
 class MinimaxComputerPlayer(Player):
+    minimax: Minimax = Minimax(min_score=-1, max_score=1)
     """coputer player implementing minimax algorithm"""
-
-    def __init__(self):
-        self.minimax = Minimax(min_score=-1, max_score=1)
-        
 
     def get_move(self, game_state: GameState)->Move|None:
         """
         get the move using minimax
         """
-        return self.minimax.get_best_move(game_state)
+        score, best_gamestate = self.minimax.get_best_gamestate(game_state)
+
+        #compute the move by using two given states of the game
+        num_counter_moved = None
+        pile_index = None
+        for idx, pile in enumerate(game_state.board.piles):
+            if pile != best_gamestate.board.piles[idx]:
+                pile_index = idx + 1
+                num_counter_moved = pile - best_gamestate.board.piles[idx]
+                break
+
+        if pile_index is None or num_counter_moved is None:
+            return None
+
+        return Move( Counter(num_counter_moved), PileIndex(pile_index), \
+                    game_state, best_gamestate)

@@ -56,11 +56,13 @@ class GameState(CoreGameState):
     def possible_moves(self)->list["Move"]:
         result = []
         for idx, pile in enumerate(self.board.piles):
-            for counter in range(1, pile):
+            for counter in range(1, pile+1):
                 next_move = Move(Counter(counter), PileIndex(idx+1), \
                                  self, \
-                                 GameState(NimBoard( self.board.piles[:idx] + (self.board.piles[idx] - counter, ) + self.board.piles[idx+1: ] ))   )
-                result.append[next_move]
+                                 GameState(NimBoard( self.board.piles[:idx] + \
+                                                ( Counter(self.board.piles[idx] - counter), ) + \
+                                                    self.board.piles[idx+1: ] ))   )
+                result.append(next_move)
         return result
                 
     @cached_property

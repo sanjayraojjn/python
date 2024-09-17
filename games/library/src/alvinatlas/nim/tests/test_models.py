@@ -1,11 +1,7 @@
 import unittest
 
 from alvinatlas.nim.logic.models import GameState as NimGameState
-from alvinatlas.nim.logic.models import Counter
-from alvinatlas.nim.logic.exceptions import InvalidCounter
-import unittest
-from alvinatlas.nim.logic.models import GameState as NimGameState
-from alvinatlas.nim.logic.models import Counter, PileIndex, NimBoard
+from alvinatlas.nim.logic.models import Counter, PileIndex, NimBoard, Move
 from alvinatlas.nim.logic.exceptions import InvalidCounter, InvalidPileIndex
 
 class TestCounter(unittest.TestCase):
@@ -148,7 +144,45 @@ class TestGameState(unittest.TestCase):
         game_state = NimGameState(board)
         self.assertEqual(sorted(game_state.possible_next_states) , \
                          sorted( [ ] ) )
+
+    def test_gamestate_possible_moves(self)->None:
+        """
+        test possible moves of the given game state
+        """
+        #test-1
+        board = NimBoard( ( Counter(4), Counter(5) ) )
+        game_state = NimGameState(board)
+
+        self.assertEqual(game_state.possible_moves , \
+                         [ 
+                             Move( Counter(1), PileIndex(1), game_state, \
+                                NimGameState( NimBoard( ( Counter(3), Counter(5)) ) ) ),
+                             Move( Counter(2), PileIndex(1), game_state, \
+                                NimGameState( NimBoard( ( Counter(2), Counter(5)) ) ) ),
+                             Move( Counter(3), PileIndex(1), game_state, \
+                                NimGameState( NimBoard( ( Counter(1), Counter(5)) ) ) ),
+                             Move( Counter(4), PileIndex(1), game_state, \
+                                NimGameState( NimBoard( ( Counter(0), Counter(5)) ) ) ),
+                             Move( Counter(1), PileIndex(2), game_state, \
+                                NimGameState( NimBoard( ( Counter(4), Counter(4)) ) ) ),
+                             Move( Counter(2), PileIndex(2), game_state, \
+                                NimGameState( NimBoard( ( Counter(4), Counter(3)) ) ) ),
+                             Move( Counter(3), PileIndex(2), game_state, \
+                                NimGameState( NimBoard( ( Counter(4), Counter(2)) ) ) ),
+                             Move( Counter(4), PileIndex(2), game_state, \
+                                NimGameState( NimBoard( ( Counter(4), Counter(1)) ) ) ),
+                             Move( Counter(5), PileIndex(2), game_state, \
+                                NimGameState( NimBoard( ( Counter(4), Counter(0)) ) ) ),
+                          ] )
         
+        #test-2
+        board = NimBoard( ( Counter(0), Counter(0), Counter(1) ) )
+        game_state = NimGameState(board)
+        self.assertEqual(game_state.possible_moves , \
+                         [ Move( Counter(1), PileIndex(3), game_state, \
+                            NimGameState( NimBoard( ( Counter(0), Counter(0), Counter(0) ) ) ) ),
+                                    ] )
+
     def test_gamestate_game_over(self)->None:
         """
         test game over
