@@ -9,7 +9,8 @@ from alvinatlas.core.exceptions import GameOver
 from alvinatlas.nim.logic.exceptions import InvalidMove
 from alvinatlas.nim.logic.models import GameState, NimBoard, Counter
 from alvinatlas.nim.game.player import Player
-from alvinatlas.nim.game.exceptions import InvalidGame
+from alvinatlas.nim.game.exceptions import InvalidRenderer, \
+    BothPlayerSame, InvalidCurrentPlayer, InvalidPlayer
 
 ErrorHandler: TypeAlias = Callable[[Exception ], None]
 
@@ -22,16 +23,22 @@ class Nim:
     error_handler: ErrorHandler | None = None
 
     def __post_init__(self)->None:
-        if self.player1 is self.player2:
-            raise InvalidGame("Both players are same")
-        if self.current_player not in (self.player1, self.player2):
-            raise InvalidGame("Wrong current player set")
+        id_p1 = id(self.player1)
+        id_p2 = id(self.player2)
+        id_cp = id(self.current_player)
+
+        if id_p1 == id_p2:
+            raise BothPlayerSame("Both players are same")
+        if (id_cp != id_p1) and (id_cp != id_p2):
+            raise InvalidCurrentPlayer("Wrong current player set")
         if self.player1 is None:
-            raise InvalidGame("First Player is not defined")
+            raise InvalidPlayer("First Player is not defined")
         if self.player2 is None:
-            raise InvalidGame("Second player is not defined")
+            raise InvalidPlayer("Second player is not defined")
         if self.current_player is None:
-            raise InvalidGame("current player is not defined")
+            raise InvalidCurrentPlayer("current player is not defined")
+        if not isinstance(self.renderer, Renderer):
+            raise InvalidRenderer("Not a valid renderer provided")
         
     def play(self, starting_conf:list[int]|None=None)->None:
         """

@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from alvinatlas.nim.logic.validators import validate_counter, \
     validate_pile_index, validate_move, validate_board, validate_gamestate
 from alvinatlas.core.models import GameState as CoreGameState
+from alvinatlas.core.exceptions import GameOver
 #if TYPE_CHECKING:
 #    from alvinatlas.nim.game.player import Player
 
@@ -41,7 +42,7 @@ class NimBoard:
     def __repr__(self):
         out = f""
         for idx, pile in enumerate(self.piles):
-            out = out + f'{idx} -> [' + (f"\N{circled times} " * self.counter) + f"] {pile}" + "\n"
+            out = out + f'{idx} -> [' + (f"\N{circled times} " * pile) + f"] {pile}" + "\n"
         return out
 
 @dataclass(frozen=True)
@@ -54,6 +55,8 @@ class GameState(CoreGameState):
 
     @cached_property
     def possible_moves(self)->list["Move"]:
+        if self.game_over:
+            raise GameOver("No more moves possible")
         result = []
         for idx, pile in enumerate(self.board.piles):
             for counter in range(1, pile+1):
@@ -121,5 +124,16 @@ class Move:
     def __post_init__(self):
         validate_move(self)
 
+    def __eq__(self, another_move:"Move")->bool:
+        return self.before_state == another_move.before_state and \
+                self.after_state == another_move.after_state and \
+                self.counter == another_move.counter and \
+                self.pile == another_move.pile
+    
+    def __ne__(self, another_move:"Move")->bool:
+        return self.before_state != another_move.before_state or \
+                self.after_state != another_move.after_state or \
+                self.counter != another_move.counter or \
+                self.pile != another_move.pile
 
 

@@ -5,7 +5,7 @@ from alvinatlas.core.minimax import Minimax
 from alvinatlas.core.exceptions import GameOver
 
 from alvinatlas.nim.logic.models import GameState, Move, Counter, PileIndex, NimBoard
-from alvinatlas.nim.logic.exceptions import InvalidMove
+from alvinatlas.nim.logic.exceptions import InvalidMove, InvalidCounter
 
 @dataclass(frozen=True)
 class Player:
@@ -50,6 +50,12 @@ class ConsolePlayer(Player):
                 counter = Counter(int(counter))
         except ValueError:
             raise InvalidMove("wrong inputs")
+        
+        if len(game_state.board.piles) < pile:
+            raise InvalidMove(f"wrong pile index {pile}, there are only {len(game_state.board.piles)} piles in the game.")
+
+        if counter > game_state.board.piles[pile.array_index]:
+            raise InvalidMove(f"wrong counter, there are only {game_state.board.piles[pile.array_index]} counters in the specified pile.")
         
         after_state = GameState(NimBoard( game_state.board.piles[:pile.array_index] + \
                             (Counter(game_state.board.piles[pile.array_index] - counter), ) + \

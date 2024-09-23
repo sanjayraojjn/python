@@ -12,9 +12,10 @@ class Renderer(metaclass=abc.ABCMeta):
         renders the game state on screen
         """
 
-def clear_screen(self)->None:
+def clear_screen()->None:
     print("\033c", end="")  #clears the screen upto start of the screen
 
 def blink(text:str)->str:
     return f"\033[5m{text}\033[0m"
+
 

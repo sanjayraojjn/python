@@ -1,4 +1,7 @@
 import unittest
+from contextlib import redirect_stdout
+import io
+import difflib
 
 from alvinatlas.nim.logic.models import GameState as NimGameState
 from alvinatlas.nim.logic.models import Counter, PileIndex, NimBoard, Move
@@ -90,6 +93,34 @@ class TestNimBoard(unittest.TestCase):
         with self.assertRaises(ValueError, msg="only tuple of Counter type allowed"):
             board = NimBoard( [Counter(5), Counter(10), Counter(3) ] )
 
+    def test_nimboard_repr(self)->None:
+        """
+        test representation of the NimBoard
+        """
+        board = NimBoard( (Counter(5), Counter(10), Counter(3) ) )
+        #print repr of the board on stdout and capture
+        f = io.StringIO()
+        with redirect_stdout(f):
+            print(board, end="")
+        sout = f.getvalue()
+
+        #expected value
+        expected = "\n".join( [ f'{idx} -> [' + (f"\N{circled times} " * pile) + f"] {pile}" \
+                    for idx, pile in enumerate([5, 10, 3])] ) + "\n"
+        
+        #check diff in two strings
+        # for i,s in enumerate(difflib.ndiff(sout, expected)):
+        #     if s[0]==' ': continue
+        #     elif s[0]=='-':
+        #         print(u'Delete "{}" from position {}'.format(s[-1],i))
+        #     elif s[0]=='+':
+        #         print(u'Add "{}" to position {}'.format(s[-1],i))
+
+        #test it against the expected
+        self.assertEqual( sout, expected )
+
+
+
 class TestGameState(unittest.TestCase):
     """
     tests Nim Game state
@@ -109,41 +140,6 @@ class TestGameState(unittest.TestCase):
         board = ( (1,2,3,4) )
         with self.assertRaises(ValueError, msg="Nim GameState can be created using NimBoard only"):
             game_state = NimGameState(board)
-
-    def test_gamestate_possible_next_states(self)->None:
-        """
-        test possible next states of the given game state
-        """
-        #test-1
-        board = NimBoard( ( Counter(4), Counter(5) ) )
-        game_state = NimGameState(board)
-        self.assertEqual(sorted(game_state.possible_next_states) , \
-                         sorted( [ NimGameState( NimBoard( ( Counter(3), Counter(5)) ) ),
-                         NimGameState( NimBoard( ( Counter(2), Counter(5)) ) ),
-                         NimGameState( NimBoard( ( Counter(1), Counter(5)) ) ),
-                         NimGameState( NimBoard( ( Counter(0), Counter(5)) ) ),
-                         NimGameState( NimBoard( ( Counter(4), Counter(4)) ) ),
-                         NimGameState( NimBoard( ( Counter(4), Counter(3)) ) ),
-                         NimGameState( NimBoard( ( Counter(4), Counter(2)) ) ),
-                         NimGameState( NimBoard( ( Counter(4), Counter(1)) ) ),
-                         NimGameState( NimBoard( ( Counter(4), Counter(0)) ) ) ] ) )
-        
-        #test-2
-        board = NimBoard( ( Counter(0), Counter(0), Counter(1) ) )
-        game_state = NimGameState(board)
-        self.assertEqual(sorted(game_state.possible_next_states) , \
-                         sorted( [ NimGameState( NimBoard( ( Counter(0), Counter(0), Counter(0) ) ) ),
-                                    ] ) )
-
-    def test_gamestate_possible_next_states_negative_cases(self)->None:
-        """
-        test possible next states of the given game state
-        """        
-        #test-2
-        board = NimBoard( ( Counter(0), Counter(0), Counter(0) ) )
-        game_state = NimGameState(board)
-        self.assertEqual(sorted(game_state.possible_next_states) , \
-                         sorted( [ ] ) )
 
     def test_gamestate_possible_moves(self)->None:
         """
@@ -183,6 +179,44 @@ class TestGameState(unittest.TestCase):
                             NimGameState( NimBoard( ( Counter(0), Counter(0), Counter(0) ) ) ) ),
                                     ] )
 
+    def test_gamestate_possible_next_states(self)->None:
+        """
+        test possible next states of the given game state
+        """
+        #test-1
+        board = NimBoard( ( Counter(4), Counter(5) ) )
+        game_state = NimGameState(board)
+        self.assertEqual(sorted(game_state.possible_next_states) , \
+                         sorted( [ NimGameState( NimBoard( ( Counter(3), Counter(5)) ) ),
+                         NimGameState( NimBoard( ( Counter(2), Counter(5)) ) ),
+                         NimGameState( NimBoard( ( Counter(1), Counter(5)) ) ),
+                         NimGameState( NimBoard( ( Counter(0), Counter(5)) ) ),
+                         NimGameState( NimBoard( ( Counter(4), Counter(4)) ) ),
+                         NimGameState( NimBoard( ( Counter(4), Counter(3)) ) ),
+                         NimGameState( NimBoard( ( Counter(4), Counter(2)) ) ),
+                         NimGameState( NimBoard( ( Counter(4), Counter(1)) ) ),
+                         NimGameState( NimBoard( ( Counter(4), Counter(0)) ) ) ] ) )
+        
+        #test-2
+        board = NimBoard( ( Counter(0), Counter(0), Counter(1) ) )
+        game_state = NimGameState(board)
+        self.assertEqual(sorted(game_state.possible_next_states) , \
+                         sorted( [ NimGameState( NimBoard( ( Counter(0), Counter(0), Counter(0) ) ) ),
+                                    ] ) )
+
+    def test_gamestate_possible_next_states_negative_cases(self)->None:
+        """
+        test possible next states of the given game state
+        """        
+        #test-1
+        board = NimBoard( ( Counter(0), Counter(0), Counter(0) ) )
+        game_state = NimGameState(board)
+        #no moves possible
+        self.assertEqual(sorted(game_state.possible_next_states) , \
+                         sorted( [ ] ) )
+        #and the game is over
+        self.assertTrue(game_state.game_over)
+
     def test_gamestate_game_over(self)->None:
         """
         test game over
@@ -191,14 +225,64 @@ class TestGameState(unittest.TestCase):
         board = NimBoard( ( Counter(4), Counter(5) ) )
         game_state = NimGameState(board)
         self.assertFalse( game_state.game_over )
-        #test-1
+        #test-2
         board = NimBoard( ( Counter(0), Counter(0), Counter(1) ) )
         game_state = NimGameState(board)
         self.assertFalse( game_state.game_over )
-        #test-1
+        #test-3
         board = NimBoard( ( Counter(0), Counter(0) ) )
         game_state = NimGameState(board)
         self.assertTrue( game_state.game_over )
+
+    def test_gamestate_misc_methods(self)->None:
+        """
+        test some gamestate equality methods
+        """
+        board1 = NimBoard( ( Counter(4), Counter(5) ) )
+        game_state1 = NimGameState(board1)
+        board2 = NimBoard( ( Counter(4), Counter(5) ) )
+        game_state2 = NimGameState(board2)
+
+        #equal boards
+        self.assertEqual(game_state1, game_state2)
+        self.assertGreaterEqual(game_state1, game_state2)
+        self.assertLessEqual(game_state1, game_state2)
+
+        board3 = NimBoard( ( Counter(0), Counter(0), Counter(1) ) )
+        game_state3 = NimGameState(board3)
+
+        #not equal
+        self.assertNotEqual(game_state1, game_state3)
+
+        #greater
+        self.assertGreater(game_state1, game_state3)
+        self.assertGreaterEqual(game_state1, game_state3)
+
+        #lesser
+        self.assertLess(game_state3, game_state1)
+        self.assertLessEqual(game_state3, game_state1)
+
+    def test_gamestate_repr(self)->None:
+        """
+        test the representation of the gamestate
+        """
+        board = NimBoard( (Counter(5), Counter(10), Counter(3) ) )
+        game_state = NimGameState(board)
+
+        #get representation of a game state on screen/stdout
+        f = io.StringIO()
+        with redirect_stdout(f):
+            print(game_state, end="")
+            #something
+        s = f.getvalue()
+
+        #expected value
+        expected = "]\n".join( [ (f'{pile}[' + f"\N{circled times} " * pile) 
+                               for pile in game_state.board.piles] ) + "]\n"
+        self.assertEqual(s, expected)
+
+
+
 
 
 
