@@ -1,6 +1,7 @@
 from functools import cache
 
-from alvinatlas.core.models import GameState, Move
+from alvinatlas.core.models import GameState
+from alvinatlas.core.exceptions import GameOver
 
 class Minimax:
 
@@ -13,7 +14,7 @@ class Minimax:
         """
         """
         if game_state.game_over:
-            return None
+            raise GameOver("Game is over")
         return max( (self.minimax(new_state, False), new_state ) \
                    for new_state in game_state.possible_next_states )
 

@@ -40,7 +40,7 @@ class Nim:
         if not isinstance(self.renderer, Renderer):
             raise InvalidRenderer("Not a valid renderer provided")
         
-    def play(self, starting_conf:list[int]|None=None)->None:
+    def play(self, starting_conf:list[int]|None=None)->Player:
         """
         """
         if starting_conf is None: #random game
@@ -69,4 +69,5 @@ class Nim:
                 if self.error_handler:
                     self.error_handler(ex)
                 break
-            self.current_player
+        return self.player1 if current_player is self.player2 \
+                    else self.player2

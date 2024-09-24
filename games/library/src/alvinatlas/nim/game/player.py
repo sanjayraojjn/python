@@ -11,6 +11,11 @@ from alvinatlas.nim.logic.exceptions import InvalidMove, InvalidCounter
 class Player:
     
     def make_move(self, game_state: GameState)->GameState:
+        """
+        """
+        if game_state.game_over:
+            raise GameOver("Game is over")
+        
         #check if it is your turn
         if (move := self.get_move(game_state) ):
             return move.after_state
@@ -29,6 +34,8 @@ class ComputerRandomPlayer(Player):
     def get_move(self, game_state: GameState)->Move|None:
         """
         """
+        if game_state.game_over:
+            raise GameOver("Game is over")
         return random.choice( game_state.possible_moves )
     
 @dataclass(frozen=True)
@@ -38,13 +45,15 @@ class ConsolePlayer(Player):
         """
         get a move using console input
         """
+        if game_state.game_over:
+            raise GameOver("Game is over")
         try:
             if len(game_state.board.piles) == 1:
                 ip = input("enter your move# ")
                 pile = PileIndex(1)
                 counter = Counter(int(ip.strip()))
             else:
-                ip = input("enter next move#(pile counter) space-separated: ")
+                ip = input("enter your move#(pile counter) space-separated: ")
                 pile, counter = ip.strip().split()
                 pile = PileIndex(int(pile))
                 counter = Counter(int(counter))
@@ -75,6 +84,8 @@ class MinimaxComputerPlayer(Player):
         """
         get the move using minimax
         """
+        if game_state.game_over:
+            raise GameOver("Game is over")
         score, best_gamestate = self.minimax.get_best_gamestate(game_state)
 
         #compute the move by using two given states of the game

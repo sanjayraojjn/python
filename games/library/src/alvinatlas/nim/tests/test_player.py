@@ -236,7 +236,6 @@ class TestConsolePlayer(unittest.TestCase):
 
             #revert to old stdin
             sys.stdin = oldstdin
-            print(new_gamestate.excep is None, ">>>>>>>>>>>>>>>>>")
 
             #this input should have raised an exception("InvalidMove")
             self.assertTrue(isinstance(new_gamestate, WrappedException))
@@ -249,7 +248,95 @@ class TestMiniMaxPlayer(unittest.TestCase):
     test case for minimax computer player
     """
 
-    def test_player_creation(self)->None:
+    def test_minimaxplayer_creation(self)->None:
         """
         test creation of minimax computer players
         """
+        minimax_player = MinimaxComputerPlayer()
+
+    def test_minimaxplayer_getmove(self)->None:
+        """
+        test getmove of minimax player
+        """
+        #test-1
+        board = NimBoard( ( Counter(4), Counter(5) ) )
+        game_state = NimGameState(board)
+
+        minimax_player = MinimaxComputerPlayer()
+
+        #expected board
+        expected_board = NimBoard( ( Counter(4), Counter(4) ) )
+        expected_gamestate = NimGameState(expected_board)
+        expected_move = Move(Counter(1), PileIndex(2), game_state, expected_gamestate)
+
+        self.assertEqual(minimax_player.get_move(game_state), expected_move)
+
+        #test-2
+        board = NimBoard( ( Counter(6), ) )
+        game_state = NimGameState(board)
+
+        #expected board
+        expected_board = NimBoard( ( Counter(1), ) )
+        expected_gamestate = NimGameState(expected_board)
+        expected_move = Move(Counter(5), PileIndex(1), game_state, expected_gamestate)
+
+        self.assertEqual(minimax_player.get_move(game_state), expected_move)
+
+    def test_minimaxplayer_getmove_negative_cases(self)->None:
+        """
+        test getmove of minimax player with a few negative cases
+        """
+        #test-1
+        board = NimBoard( ( Counter(0), Counter(1) ) )
+        game_state = NimGameState(board)
+
+        minimax_player = MinimaxComputerPlayer()
+
+        #expected board
+        expected_board = NimBoard( ( Counter(0), Counter(0) ) )
+        expected_gamestate = NimGameState(expected_board)
+        expected_move = Move(Counter(1), PileIndex(2), game_state, expected_gamestate)
+
+        self.assertEqual(minimax_player.get_move(game_state), expected_move)
+
+    def test_minimaxplayer_makemove(self)->None:
+        """
+        test makemove method of minimaxcomputer player
+        """
+        #test-1
+        board = NimBoard( ( Counter(4), Counter(5) ) )
+        game_state = NimGameState(board)
+
+        minimax_player = MinimaxComputerPlayer()
+
+        #expected board
+        expected_board = NimBoard( ( Counter(4), Counter(4) ) )
+        expected_gamestate = NimGameState(expected_board)
+        #expected_move = Move(Counter(1), PileIndex(2), game_state, expected_gamestate)
+
+        self.assertEqual(minimax_player.make_move(game_state), expected_gamestate)
+
+    def test_minimaxplayer_makemove_negative_cases(self)->None:
+        """
+        test random player's makemove negative cases
+        """
+        #test-1
+        board = NimBoard( ( Counter(0), Counter(0) ) )
+        game_state = NimGameState(board)
+
+        minimax_player = MinimaxComputerPlayer()
+        with self.assertRaises(GameOver, msg="no more moves possible"):
+            minimax_player.make_move(game_state)
+
+        #test-2
+        board = NimBoard( ( Counter(1), Counter(0) ) )
+        game_state = NimGameState(board)
+
+        minimax_player = MinimaxComputerPlayer()
+
+        #expected board
+        expected_board = NimBoard( ( Counter(0), Counter(0) ) )
+        expected_gamestate = NimGameState(expected_board)
+        
+        self.assertEqual(minimax_player.make_move(game_state), expected_gamestate)
+
