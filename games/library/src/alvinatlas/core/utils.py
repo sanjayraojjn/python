@@ -1,5 +1,6 @@
 from time import perf_counter
 
+RANDOM_SEED = 675675
 
 def timer(fn):
     def inner(*args, **kwargs):

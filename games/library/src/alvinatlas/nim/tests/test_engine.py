@@ -5,7 +5,7 @@ import io
 import sys
 import time
 
-from alvinatlas.core.utils import timer
+from alvinatlas.core.utils import timer, RANDOM_SEED
 
 from alvinatlas.nim.game.player import ComputerRandomPlayer, ConsolePlayer, MinimaxComputerPlayer
 from alvinatlas.nim.game.engine import Nim as NimEngine
@@ -60,7 +60,7 @@ class TestNimEngine(unittest.TestCase):
         """
         winners = ["player1", "player2", "player1", "player2", "player1", \
                    "player1", "player1", "player2", "player2", "player1"]
-        random.seed(675675)
+        random.seed(RANDOM_SEED)
         for i in range(10):
             player1 = ComputerRandomPlayer()
             player2 = ComputerRandomPlayer()
@@ -85,7 +85,7 @@ class TestNimEngine(unittest.TestCase):
         t_start = time.perf_counter()
         winners = ["player2", "player2", "player2", "player2", "player2", \
                    "player1", "player2", "player2", "player1", "player2"]
-        random.seed(675675)
+        random.seed(RANDOM_SEED)
         for i in range(10):
             player1 = MinimaxComputerPlayer()
             player2 = MinimaxComputerPlayer()
@@ -178,6 +178,30 @@ class TestNimEngine(unittest.TestCase):
             "0[]\n" + "0[]\n\n"
             
         self.assertEqual(s, expected_output, msg=f"Output of engine play with human_input{human_input} is not as expected")
+
+    @timer
+    def test_engine_play_minimax_perf(self)->None:
+        """
+        tests a huge game between two minimax players
+        """
+        t_start = time.perf_counter()
+        random.seed(RANDOM_SEED)
+        player1 = MinimaxComputerPlayer()
+        player2 = MinimaxComputerPlayer()
+        current_player = player1
+        renderer = ConsoleRenderer()
+
+        engine = NimEngine(player1, player2, renderer, current_player)
+        f = io.StringIO()
+        with redirect_stdout(f):
+            winner = engine.play([100, 100])
+        s = f.getvalue()
+        self.assertTrue(winner == player1, msg=f"winner is not as expected")
+
+        #print(f"winner is {winner}")
+        t_end = time.perf_counter()
+
+        self.assertLessEqual(t_end - t_start, 30, msg="time taken is more than 30 seconds")
 
             
 
