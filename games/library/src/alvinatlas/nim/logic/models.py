@@ -112,6 +112,9 @@ class GameState(CoreGameState):
             out = out + f'{pile}[' + \
                 (f"\N{circled times} " * pile) + ']\n'
         return out
+    
+    def __hash__(self):
+        return hash( tuple(sorted(self.board.piles) ) )
 
 
 @dataclass(frozen=True)

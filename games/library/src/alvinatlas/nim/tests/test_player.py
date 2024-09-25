@@ -340,3 +340,86 @@ class TestMiniMaxPlayer(unittest.TestCase):
         
         self.assertEqual(minimax_player.make_move(game_state), expected_gamestate)
 
+    def test_minimaxplayer_align_gamestate(self)->None:
+        """
+        test align_gamestate method of minimax computer player
+        """
+        #test-1
+
+        #gamestate
+        board = NimBoard( ( Counter(2), Counter(0), Counter(2), Counter(0) ) )
+        game_state = NimGameState(board)
+
+        #best gamestate
+        board_align_to = NimBoard( ( Counter(0), Counter(0), Counter(1), Counter(2) ) )
+        game_state_align_to = NimGameState(board_align_to)
+
+        #aligned gamestate
+        board_aligned_expected = NimBoard( ( Counter(2), Counter(0), Counter(1), Counter(0) ) )
+        game_state_aligned_expected = NimGameState(board_aligned_expected)
+
+        minimax_player = MinimaxComputerPlayer()
+        self.assertEqual( minimax_player._align_gamestate(game_state, game_state_align_to), \
+                         game_state_aligned_expected)
+
+        #test-2
+
+        #gamestate
+        board = NimBoard( ( Counter(6), ) )
+        game_state = NimGameState(board)
+
+        #best gamestate
+        board_align_to = NimBoard( ( Counter(1), ) )
+        game_state_align_to = NimGameState(board_align_to)
+
+        #aligned gamestate
+        board_aligned_expected = NimBoard( ( Counter(1),  ) )
+        game_state_aligned_expected = NimGameState(board_aligned_expected)
+
+        minimax_player = MinimaxComputerPlayer()
+        self.assertEqual( minimax_player._align_gamestate(game_state, game_state_align_to), \
+                         game_state_aligned_expected)
+
+    def test_minimaxplayer_align_gamestate_negative_cases(self)->None:
+        """
+        test negative test cases of align_gamestate method of minimax computer player
+        """
+        #test-1
+
+        #gamestate
+        board = NimBoard( ( Counter(2), Counter(0), Counter(2), Counter(0) ) )
+        game_state = NimGameState(board)
+
+        #best gamestate
+        board_align_to = NimBoard( ( Counter(0), Counter(2), Counter(1), Counter(2) ) )
+        game_state_align_to = NimGameState(board_align_to)
+
+        #aligned gamestate
+        board_aligned_expected = NimBoard( ( Counter(2), Counter(0), Counter(1), Counter(0) ) )
+        game_state_aligned_expected = NimGameState(board_aligned_expected)
+
+        minimax_player = MinimaxComputerPlayer()
+
+        #minimax_player._align_gamestate(game_state, game_state_align_to)
+        with self.assertRaises(InvalidMove, msg="game states cannot be aligned"):
+            minimax_player._align_gamestate(game_state, game_state_align_to)
+
+        #test-2
+
+        #gamestate
+        board = NimBoard( ( Counter(2), Counter(0), Counter(2), Counter(0) ) )
+        game_state = NimGameState(board)
+
+        #best gamestate
+        board_align_to = NimBoard( ( Counter(0), Counter(1), Counter(1), Counter(0) ) )
+        game_state_align_to = NimGameState(board_align_to)
+
+        #aligned gamestate
+        board_aligned_expected = NimBoard( ( Counter(2), Counter(0), Counter(1), Counter(0) ) )
+        game_state_aligned_expected = NimGameState(board_aligned_expected)
+
+        minimax_player = MinimaxComputerPlayer()
+
+        #minimax_player._align_gamestate(game_state, game_state_align_to)
+        with self.assertRaises(InvalidMove, msg="game states cannot be aligned"):
+            minimax_player._align_gamestate(game_state, game_state_align_to)

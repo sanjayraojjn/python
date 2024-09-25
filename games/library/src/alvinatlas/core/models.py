@@ -59,6 +59,9 @@ class SimpleNimGameState(GameState):
     def game_over(self)->bool:
         return self.counter == 0
     
+    def __hash__(self):
+        return hash(self.counter)
+    
     #@cached_property
     #def score(self)->int:
     #    return 1 if (self.counter == 0) else None
