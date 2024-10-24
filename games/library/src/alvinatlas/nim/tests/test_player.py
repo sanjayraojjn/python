@@ -3,12 +3,13 @@ import sys
 from dataclasses import dataclass
 from contextlib import redirect_stdout
 import io
+from typing import Tuple, List
 
 from alvinatlas.core.exceptions import GameOver
 from alvinatlas.core.tests.threading import ThreadWithReturnValue
 
 from alvinatlas.nim.game.player import Player, ComputerRandomPlayer, \
-    ConsolePlayer, MinimaxComputerPlayer
+    ConsolePlayer, MinimaxComputerPlayer, GRPCPlayer
 from alvinatlas.nim.logic.models import NimBoard, \
     Counter, GameState as NimGameState, PileIndex, Move
 from alvinatlas.nim.logic.exceptions import InvalidMove
@@ -423,3 +424,60 @@ class TestMiniMaxPlayer(unittest.TestCase):
         #minimax_player._align_gamestate(game_state, game_state_align_to)
         with self.assertRaises(InvalidMove, msg="game states cannot be aligned"):
             minimax_player._align_gamestate(game_state, game_state_align_to)
+
+class TestStream:
+
+    def __init__(self, dummy_data: List[Tuple[int, int] ]):
+        self.dummy_data = dummy_data
+        self.curr_index = -1
+
+    def get_input(self):
+        self.curr_index += 1
+        return PileIndex( self.dummy_data[self.curr_index][0] ), \
+                    Counter( self.dummy_data[self.curr_index][1] )
+        
+    def set_input(self, pile: int, counter: int):
+        pass
+
+class TestGRPCPlayer(unittest.TestCase):
+    """
+    test cases for grpc player
+    """
+
+    def test_grpcplayer_creation(self)->None:
+        """
+        test creation of grpc player
+        """
+        stream = TestStream([])
+        player = GRPCPlayer(stream)
+
+
+    def test_grpcplayer_makemove(self)->None:
+        """
+        test makemove method of minimaxcomputer player
+        """
+        #test-1
+        board = NimBoard( ( Counter(4), Counter(5) ) )
+        game_state = NimGameState(board)
+
+        stream = TestStream([(1,1), (2,2)])
+        grpc_player = GRPCPlayer(stream)
+
+        #expected board
+        expected_board = NimBoard( ( Counter(3), Counter(5) ) )
+        expected_gamestate = NimGameState(expected_board)
+
+        new_game_state = grpc_player.make_move(game_state)
+        #print(new_game_state)
+        #print(expected_gamestate)
+
+        self.assertEqual(new_game_state, expected_gamestate)
+
+        #expected board after one more move
+        expected_board = NimBoard( ( Counter(3), Counter(3) ) )
+        expected_gamestate = NimGameState(expected_board)
+        self.assertEqual(grpc_player.make_move(new_game_state), expected_gamestate)
+
+if __name__ == "__main__":
+    unittest.main()
+

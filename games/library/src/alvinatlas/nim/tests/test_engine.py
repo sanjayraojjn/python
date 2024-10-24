@@ -19,7 +19,7 @@ class TestNimEngine(unittest.TestCase):
 
     def test_engine_creation(self)->None:
         """
-        test various error condition in engine creation
+        test various error conditions in engine creation
         """
         player1 = ComputerRandomPlayer()
         player2 = ComputerRandomPlayer()

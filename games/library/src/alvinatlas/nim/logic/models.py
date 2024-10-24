@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from functools import cached_property, cache
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Tuple
 
 from alvinatlas.nim.logic.validators import validate_counter, \
     validate_pile_index, validate_move, validate_board, validate_gamestate
@@ -9,12 +9,40 @@ from alvinatlas.core.exceptions import GameOver
 #if TYPE_CHECKING:
 #    from alvinatlas.nim.game.player import Player
 
-#@dataclass(frozen=True)
+@dataclass(frozen=True)
 class Counter(int):
     def __init__(self, *args, **kwargs):
         validate_counter(args[0])
         super(Counter, self).__init__()
 
+    def __repr__(self):
+        return str(int(self))
+    
+    def __str__(self):
+        return str(int(self))
+    
+    def __hash__(self):
+       return super(Counter, self).__hash__()
+    
+    def __eq__(self, another_counter:"Counter")->bool:
+        return int(self) == int(another_counter)
+    
+    def __ne__(self, another_counter:"Counter")->bool:
+        return int(self) != int(another_counter)
+    
+    def __gt__(self, another_counter:"Counter")->bool:
+        return int(self) > int(another_counter)
+    
+    def __lt__(self, another_counter:"Counter")->bool:
+        return int(self) < int(another_counter)
+    
+    def __ge__(self, another_counter:"Counter")->bool:
+        return int(self) >= int(another_counter)
+    
+    def __le__(self, another_counter:"Counter")->bool:
+        return int(self) <= int(another_counter)
+
+@dataclass(frozen=True)
 class PileIndex(int):
     def __init__(self, *args, **kwargs):
         validate_pile_index(args[0])
@@ -23,10 +51,16 @@ class PileIndex(int):
     @cached_property
     def array_index(self)->int:
         return self - 1
+    
+    def __repr__(self):
+        return str(int(self))
+    
+    def __hash__(self):
+        return super(PileIndex, self).__hash__()
 
 @dataclass(frozen=True)
 class NimBoard:
-    piles: tuple[Counter]
+    piles: Tuple[Counter]
 
     def __post_init__(self):
         validate_board(self)
@@ -42,7 +76,7 @@ class NimBoard:
     def __repr__(self):
         out = f""
         for idx, pile in enumerate(self.piles):
-            out = out + f'{idx} -> [' + (f"\N{circled times} " * pile) + f"] {pile}" + "\n"
+            out = out + f'{idx} -> [' + (f"\N{circled times} " * int(pile) ) + f"] {int(pile)}" + "\n"
         return out
 
 @dataclass(frozen=True)

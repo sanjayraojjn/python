@@ -12,3 +12,14 @@ def timer(fn):
         return to_execute
     
     return inner
+
+class EventContextManager:
+
+    def __init__(self, _event):
+        self._event = _event
+    
+    def __enter__(self):
+        self._event.wait()
+    
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        self._event.clear()

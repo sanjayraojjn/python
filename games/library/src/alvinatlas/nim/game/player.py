@@ -73,6 +73,36 @@ class ConsolePlayer(Player):
         return Move(counter, pile, \
                     game_state, \
                     after_state)
+    
+@dataclass(frozen=True)
+class GRPCPlayer(Player):
+    """
+    player for grpc server
+    """
+    input_stream: any
+
+    def get_move(self, game_state: GameState)->Move|None:
+        """
+        get a move using GRPC request
+        """
+        if game_state.game_over:
+            raise GameOver("Game is over")
+        
+        pile, counter = self.input_stream.get_input()
+        
+        if len(game_state.board.piles) < pile:
+            raise InvalidMove(f"wrong pile index {pile}, there are only {len(game_state.board.piles)} piles in the game.")
+
+        if counter > game_state.board.piles[pile.array_index]:
+            raise InvalidMove(f"wrong counter, there are only {game_state.board.piles[pile.array_index]} counters in the specified pile.")
+        
+        after_state = GameState(NimBoard( game_state.board.piles[:pile.array_index] + \
+                            (Counter(game_state.board.piles[pile.array_index] - counter), ) + \
+                            game_state.board.piles[pile.array_index+1: ] ))
+        
+        return Move(counter, pile, \
+                    game_state, \
+                    after_state)
         
 
 @dataclass(frozen=True)

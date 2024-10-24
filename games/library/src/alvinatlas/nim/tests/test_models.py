@@ -18,7 +18,12 @@ class TestCounter(unittest.TestCase):
         #min values
         self.assertEqual(1, (counter := Counter(1) ) )
         self.assertEqual(0, (counter := Counter(0) ) )
-        #Counter(-1)
+
+    def test_counter_comparison(self)->None:
+        """
+        tests comparison of counter values
+        """
+        self.assertLess(Counter(10), Counter(12) )
 
     def test_counter_values_negative_cases(self)->None:
         #negative cases
